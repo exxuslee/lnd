@@ -1,0 +1,59 @@
+services:
+  bitcoin:
+    image: lncm/bitcoind:v27.0
+    container_name: bitcoin
+    user: 1000:1000
+    volumes:
+      - "G:/bitcoin:/data/.bitcoin"
+    restart: on-failure
+    stop_grace_period: 15m30s
+    ports:
+      - "8332:8332" # RPC
+      - "8333:8333" # P2P
+      - "28332:28332" # ZMQ (rawblock)
+      - "28333:28333" # ZMQ (rawtx)
+    networks:
+      - net
+
+  lnd:
+    image: lightninglabs/lnd:v0.18.4-beta
+    user: 1000:1000
+    container_name: lnd
+    volumes:
+      - "./lnd:/data/.lnd"
+      - "./bitcoin:/data/.bitcoin"
+      - "./secrets/lnd-password.txt:/data/.lnd/walletpassword"
+    restart: on-failure
+    ports:
+      - "9735:9735" # P2P
+      - "10009:10009" # GRPC
+      - "8080:8080"   # REST (если требуется)
+    environment:
+      HOME: /data
+    depends_on:
+      - bitcoin
+    networks:
+      - net
+
+  neutrino-switcher:
+    image: "lncm/neutrino-switcher:1.0.4"
+    container_name: neutrino-switcher
+    depends_on:
+      - lnd
+      - bitcoin
+    restart: always
+    volumes:
+      - "./lnd:/lnd"
+      - "./secrets:/secrets"
+      - "./statuses:/statuses"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      JSONRPCURL: http://bitcoin:8332
+      LND_CONTAINER_NAME: lnd
+      SLEEPTIME: 43200
+    networks:
+      - net
+
+networks:
+  net:
+    driver: bridge
