@@ -30,8 +30,8 @@ fun main() {
 
     // Выполняем запрос
     try {
-        val response = blockingStub.getInfo(getInfoRequest)
-        println("Node Info: ${response}")
+//        val response = blockingStub.getInfo(getInfoRequest)
+//        println("Node Info: ${response}")
     } catch (e: Exception) {
         e.printStackTrace()
     } finally {

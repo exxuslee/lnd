@@ -27,7 +27,7 @@ services:
     ports:
       - "9735:9735" # P2P
       - "10009:10009" # GRPC
-      - "8080:8080"   # REST (если требуется)
+      - "18080:18080"   # REST (если требуется)
     environment:
       HOME: /data
     depends_on:

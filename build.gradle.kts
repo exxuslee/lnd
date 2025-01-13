@@ -15,14 +15,18 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar")))) // Подключение AAR
+    api(files("libs/Lndmobile.aar"))
+    api(fileTree("libs") { include("*.jar") })
 
-    implementation("io.grpc:grpc-netty:1.36.0")
-    implementation("io.grpc:grpc-protobuf:1.36.0")
-    implementation("io.grpc:grpc-stub:1.36.0")
+    implementation("com.google.protobuf:protobuf-java:4.28.2")
+
+    implementation("io.grpc:grpc-okhttp:1.53.0")
+    implementation("io.grpc:grpc-netty:1.53.0")
+    implementation("io.grpc:grpc-protobuf:1.53.0")
+    implementation("io.grpc:grpc-stub:1.53.0")
     implementation("io.netty:netty-tcnative-boringssl-static:2.0.28.Final")
     implementation("commons-codec:commons-codec:1.11")
 
-    implementation("com.google.protobuf:protobuf-java:4.28.2") // Protocol Buffers
     implementation("javax.annotation:javax.annotation-api:1.3.2") // Аннотации
 
     testImplementation(kotlin("test"))
@@ -40,16 +44,19 @@ sourceSets {
         proto {
             srcDir("src/main/proto") // Путь к вашим .proto файлам
         }
+        java {
+            srcDir("D:/git/lnd/build/generated/source/proto/main/java")
+        }
     }
 }
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.29.3"
+        artifact = "com.google.protobuf:protoc:4.28.2"
     }
     plugins {
         create("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.36.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.53.0"
         }
     }
     generateProtoTasks {
@@ -59,6 +66,10 @@ protobuf {
             }
         }
     }
+}
+
+tasks.withType<JavaCompile> {
+    options.isIncremental = true
 }
 
 tasks.withType<ProcessResources> {
