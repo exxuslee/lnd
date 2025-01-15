@@ -36,7 +36,7 @@ services:
       - net
 
   neutrino-switcher:
-    image: "lncm/neutrino-switcher:1.0.4"
+    image: lncm/neutrino-switcher:1.0.4
     container_name: neutrino-switcher
     depends_on:
       - lnd
@@ -51,6 +51,40 @@ services:
       JSONRPCURL: http://bitcoin:8332
       LND_CONTAINER_NAME: lnd
       SLEEPTIME: 43200
+    networks:
+      - net
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    volumes:
+      - "./redis-data:/data"
+    ports:
+      - 6379:6379
+
+  lndhub:
+    image: bluewalletorganization/lndhub:latest
+    container_name: lndhub
+    depends_on: [ redis, lnd ]
+    ports:
+      - "3000:3000" # LNDHub API
+    volumes:
+      - ./lnd:/lnd:ro
+#      - ./lndhub:/lndhub
+    environment:
+      NODE_ENV: production
+      LND_REST_URL: https://lnd:18080
+      LND_MACAROON_FILE: "/lnd/data/chain/bitcoin/testnet/admin.macaroon"
+      LND_ADMIN_MACAROON_FILE: "/lnd/data/chain/bitcoin/testnet/admin.macaroon"
+      LND_CERT_FILE: "/lnd/tls.cert"
+      MIN_BALANCE: 20000
+      PORT: 3000
+#      CONFIG: '{ "redis": { "port": 6379, "host": "redis", "family": 4, "password": "", "db": 0 }, "lnd": { "url": "lnd:18080", "password": ""}}'
+#    command: >
+#      /bin/sh -c "
+#      if [ -f $LND_CERT_FILE ]; then echo 'Copying tls.cert' && cp $LND_CERT_FILE /lndhub/; fi &&
+#      if [ -f $LND_MACAROON_FILE ]; then echo 'Copying admin.macaroon' && cp $LND_MACAROON_FILE /lndhub/; fi &&
+#      cd /lndhub && npm start"
     networks:
       - net
 
