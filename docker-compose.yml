@@ -61,32 +61,39 @@ services:
       - "./redis-data:/data"
     ports:
       - 6379:6379
+    networks:
+      - net
 
   lndhub:
     image: bluewalletorganization/lndhub:latest
     container_name: lndhub
+    user: root
     depends_on: [ redis, lnd ]
     ports:
       - "3000:3000" # LNDHub API
     volumes:
       - ./lnd:/lnd:ro
-#      - ./lndhub:/lndhub
     environment:
       NODE_ENV: production
       LND_REST_URL: https://lnd:18080
       LND_MACAROON_FILE: "/lnd/data/chain/bitcoin/testnet/admin.macaroon"
       LND_ADMIN_MACAROON_FILE: "/lnd/data/chain/bitcoin/testnet/admin.macaroon"
       LND_CERT_FILE: "/lnd/tls.cert"
-      MIN_BALANCE: 20000
       PORT: 3000
-#      CONFIG: '{ "redis": { "port": 6379, "host": "redis", "family": 4, "password": "", "db": 0 }, "lnd": { "url": "lnd:18080", "password": ""}}'
+      CONFIG: '{"enableUpdateDescribeGraph":false,"postRateLimit":100,"rateLimit":200,"forwardReserveFee":0.01,"intraHubFee":0.003,"redis":{"port":6379,"host":"redis","family":4,"password":"","db":0},"lnd":{"url":"lnd:10009","password":""}}'
 #    command: >
 #      /bin/sh -c "
-#      if [ -f $LND_CERT_FILE ]; then echo 'Copying tls.cert' && cp $LND_CERT_FILE /lndhub/; fi &&
-#      if [ -f $LND_MACAROON_FILE ]; then echo 'Copying admin.macaroon' && cp $LND_MACAROON_FILE /lndhub/; fi &&
-#      cd /lndhub && npm start"
+#      cp $LND_CERT_FILE /lndhub/ && cp $LND_ADMIN_MACAROON_FILE /lndhub/ && cd /lndhub && npm start"
     networks:
       - net
+
+#      apt-get update && apt-get install -y curl &&
+#      npm install -g npm@latest &&
+#      npm install -g n &&
+#      n stable &&
+#      hash -r &&
+#      npm install @grpc/grpc-js@latest &&
+#  || tail -f /dev/null
 
 networks:
   net:
