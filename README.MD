@@ -22,6 +22,8 @@ https://1ml.com/testnet/
 
 lncli --network=testnet connect 03fea840ee807cc68ee2359669d3f00b638ba521a8f269a6ad7e618776af55010f@18.158.93.160:9735
 lncli --network=testnet connect 03781444afe27babf724304c25370f195d9d955065d7894539ed7db5fe596badb8@138.197.57.50:19735
+lncli --network=testnet connect 03c6083f63679afdcc8cc710d44ea9cce8ae99904c85c83ac06ee2e8a7fd4cd378@18.198.113.165:9735
+lncli --network=testnet connect 0259d4116dff6ac1a33f8e8d909f151d375a9ba812c7a037b6d2a7372de8f68020@176.9.28.117:9735
 
 ==================================================================
 
